@@ -18,6 +18,12 @@ public class TableController {
         this.tableService = tableService;
     }
 
+    @GetMapping("/cellValue")
+    public ResponseEntity<String> getCellValue(@RequestParam(value = "cellId") String cellId) {
+        String value = tableService.getCellValueById(cellId);
+        return new ResponseEntity<>(value, HttpStatus.OK);
+    }
+
     @GetMapping("/table")
     public ResponseEntity<Table> getTable() {
         Table table = tableService.getTable();

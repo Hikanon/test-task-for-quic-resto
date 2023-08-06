@@ -1,17 +1,3 @@
-class Table {
-
-    cells
-
-    constructor(cells) {
-        this.cells = cells;
-    }
-
-    get cells() {
-        return this.cells;
-    }
-}
-
-
 class Cell {
 
     cellId;
@@ -31,10 +17,10 @@ function handleKeyUp(event) {
     }
 }
 
-function handle(target) {
+async function handle(target) {
 
     let cell = new Cell(target.id, target.value);
-    let calculatedTable = calculate(cell);
+    let calculatedTable = await calculate(cell);
     fillTable(calculatedTable);
 }
 
@@ -57,6 +43,32 @@ function calculate(cell) {
     });
 }
 
+async function setValue(target) {
+
+    let value = await getCellValue(target);
+    if (value !== undefined) {
+        target.value = value;
+    } else {
+        target.value = '';
+    }
+
+}
+
+async function getCellValue(target) {
+    let cell = new Cell(target.id, target.value);
+    return fetch("/api/cellValue?cellId=" + cell.cellId)
+        .then((response) => {
+            return response
+                .text()
+                .then((data) => {
+                    console.log(data);
+                    return data.toString();
+                }).catch((err) => {
+                    console.log(err);
+                })
+         });
+}
+
 function getTable() {
 
     return fetch("/api/table")
@@ -73,14 +85,18 @@ function getTable() {
 
 function fillTable(cells) {
 
-    cells.then(data => {
-        for (let cell of data) {
+    // cells.then(data => {
+        for (let cell of cells) {
             let elementId = cell.cellId;
             let element = document.getElementById(elementId);
             element.value = cell.value;
         }
-    });
+    // });
 }
 
-let table = getTable();
-fillTable(table);
+async function main() {
+    let table = await getTable();
+    fillTable(table);
+}
+
+main().then();

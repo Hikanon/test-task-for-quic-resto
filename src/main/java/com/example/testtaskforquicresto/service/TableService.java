@@ -24,6 +24,14 @@ public class TableService {
         tableRepository.saveCell(cell);
     }
 
+    public String getCellValueById(String cellId) {
+        Cell c = tableRepository.getCellId(cellId);
+        if (c == null) {
+            return "";
+        }
+        return c.getValue();
+    }
+
     public Table getTable() {
         return tableRepository.getTable();
     }
@@ -45,6 +53,7 @@ public class TableService {
         String value = tempCell.getValue();
         if (value.startsWith("=")) {
             try {
+                cell.setExpression(true);
                 value = replaceCellsIdToValue(value.substring(1));
                 value = String.valueOf(FormulaParse.calculate(value));
                 tempCell.setValue(value);
@@ -65,7 +74,12 @@ public class TableService {
             if (matchCell == null) {
                 throw new IllegalStateException("Empty cell with id" + group);
             }
-            value = value.replace(group, matchCell.getValue());
+            if(matchCell.getValue().startsWith("=")){
+                Cell calculateCell = calculateCell(matchCell);
+                value = value.replace(group, calculateCell.getValue());
+            } else {
+                value = value.replace(group, matchCell.getValue());
+            }
         }
 
         return value;

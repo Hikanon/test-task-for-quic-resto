@@ -19,6 +19,10 @@ public class TableRepository {
     public void saveCell(Cell cell) {
         table.setCell(cell);
     }
+
+    public Cell getCellId(String cellId) {
+        return table.getCell(cellId);
+    }
     public Table getTable() {
         return table;
     }
