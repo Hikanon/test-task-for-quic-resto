@@ -15,7 +15,7 @@ public class Table {
     }
 
     public Cell getCell(String cellId) {
-        if(cells.isEmpty()) {
+        if (cells.isEmpty()) {
             return null;
         }
         return cells.stream()
@@ -27,10 +27,16 @@ public class Table {
 
     public void setCell(Cell newCell) {
         Cell cell = getCell(newCell.getCellId());
+        String newCellValue = newCell.getValue();
+
         if (cell != null) {
+            if (newCellValue.startsWith("=")) {
+                cell.setExpression(true);
+            }
             String value = newCell.getValue();
             cell.setValue(value);
         } else {
+            newCell.setExpression(true);
             cells.add(newCell);
         }
     }
