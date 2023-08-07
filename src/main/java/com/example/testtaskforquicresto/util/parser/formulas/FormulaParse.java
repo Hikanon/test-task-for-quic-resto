@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FormulaParse {
 
-    public static int calculate(String expression) {
+    public static double calculate(String expression) {
         try {
             List<Lexeme> lexemes = lexemeAnalyze(expression);
             LexemeBuffer buffer = new LexemeBuffer(lexemes);
@@ -50,7 +50,7 @@ public class FormulaParse {
                     position++;
                     continue;
                 default:
-                    if (c <= '9' && c >= '0') {
+                    if ((c <= '9' && c >= '0')) {
                         StringBuilder sb = new StringBuilder();
                         do {
                             sb.append(c);
@@ -59,7 +59,7 @@ public class FormulaParse {
                                 break;
                             }
                             c = expression.charAt(position);
-                        } while (c <= '9' && c >= '0');
+                        } while (c <= '9' && c >= '0' || c == '.');
                         lexemes.add(new Lexeme(LexemeType.NUMBER, sb.toString()));
                     } else {
                         if (c != ' ') {
@@ -74,7 +74,7 @@ public class FormulaParse {
         return lexemes;
     }
 
-    public static int expression(LexemeBuffer buffer) {
+    public static double expression(LexemeBuffer buffer) {
         Lexeme lexeme = buffer.next();
         if (lexeme.getType() == LexemeType.EOF) {
             return 0;
@@ -84,8 +84,8 @@ public class FormulaParse {
         }
     }
 
-    private static int plusMinus(LexemeBuffer buffer) {
-        int value = mulDiv(buffer);
+    private static double plusMinus(LexemeBuffer buffer) {
+        double value = mulDiv(buffer);
         while (true) {
             Lexeme lexeme = buffer.next();
             switch (lexeme.getType()) {
@@ -102,8 +102,8 @@ public class FormulaParse {
         }
     }
 
-    private static int mulDiv(LexemeBuffer buffer) {
-        int value = factor(buffer);
+    private static double mulDiv(LexemeBuffer buffer) {
+        double value = factor(buffer);
         while (true) {
             Lexeme lexeme = buffer.next();
             switch (lexeme.getType()) {
@@ -120,13 +120,17 @@ public class FormulaParse {
         }
     }
 
-    private static int factor(LexemeBuffer buffer) {
+    private static double factor(LexemeBuffer buffer) {
         Lexeme lexeme = buffer.next();
+        double value;
         switch (lexeme.getType()) {
+            case MINUS:
+                value = factor(buffer);
+                return -value;
             case NUMBER:
-                return Integer.parseInt(lexeme.getValue());
+                return Double.parseDouble(lexeme.getValue());
             case LEFT_BRACKET:
-                int value = expression(buffer);
+                value = expression(buffer);
                 lexeme = buffer.next();
                 if (lexeme.getType() != LexemeType.RIGHT_BRACKET) {
                     throw new NumberFormatException("Missing right bracket at position " + buffer.getPosition());

@@ -14,14 +14,14 @@ class FormulaParseTest {
 
     @Test
     public void testLexemeAnalyze () {
-        String expression = "15+ 5+4/45    -7 /7 (4/8) *   2";
+        String expression = "15+ 5+4.2/45    -7 /7 (4/8) *   2";
 
         List<Lexeme> test = new ArrayList<>();
         test.add(new Lexeme(LexemeType.NUMBER, "15"));
         test.add(new Lexeme(LexemeType.PLUS, "+"));
         test.add(new Lexeme(LexemeType.NUMBER, "5"));
         test.add(new Lexeme(LexemeType.PLUS, "+"));
-        test.add(new Lexeme(LexemeType.NUMBER, "4"));
+        test.add(new Lexeme(LexemeType.NUMBER, "4.2"));
         test.add(new Lexeme(LexemeType.DIV, "/"));
         test.add(new Lexeme(LexemeType.NUMBER, "45"));
         test.add(new Lexeme(LexemeType.MINUS, "-"));
@@ -44,11 +44,11 @@ class FormulaParseTest {
 
     @Test
     void expression() {
-        String expression = "2+2 *  2";
+        String expression = "2+2 *  -2";
         List<Lexeme> test = FormulaParse.lexemeAnalyze(expression);
         LexemeBuffer buffer = new LexemeBuffer(test);
-        int result = FormulaParse.expression(buffer);
-        assertEquals(result, 6);
+        double result = FormulaParse.expression(buffer);
+        assertEquals(result, -2.0);
     }
 
 }

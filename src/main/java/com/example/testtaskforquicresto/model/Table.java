@@ -14,6 +14,10 @@ public class Table {
         this.cells = new ArrayList<>();
     }
 
+    public Table(List<Cell> cells) {
+        this.cells = cells;
+    }
+
     public Cell getCell(String cellId) {
         if (cells.isEmpty()) {
             return null;

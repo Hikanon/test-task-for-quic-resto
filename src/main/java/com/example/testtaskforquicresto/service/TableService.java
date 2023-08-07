@@ -7,6 +7,7 @@ import com.example.testtaskforquicresto.repository.TableRepository;
 import com.example.testtaskforquicresto.util.parser.formulas.FormulaParse;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +34,24 @@ public class TableService {
     }
 
     public Table getTable() {
-        return tableRepository.getTable();
+        Table table = tableRepository.getTable();
+        if(table.getCells() == null) {
+            return null;
+        }else {
+            return calculateTable(table);
+        }
     }
+
+    private Table calculateTable(Table table) {
+        List<Cell> cells = new ArrayList<>();
+        for (Cell cell : table.getCells()) {
+            Cell tempCell = new Cell(cell.getCellId(), cell.getValue());
+            tempCell = calculateCell(tempCell);
+            cells.add(tempCell);
+        }
+        return new Table(cells);
+    }
+
 
     public Table calculate(Cell cell) {
         Table tempTable = new Table();
@@ -54,6 +71,7 @@ public class TableService {
         if (value.startsWith("=")) {
             try {
                 cell.setExpression(true);
+                tempCell.setExpression(true);
                 value = replaceCellsIdToValue(value.substring(1));
                 value = String.valueOf(FormulaParse.calculate(value));
                 tempCell.setValue(value);
