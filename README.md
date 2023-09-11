@@ -1,4 +1,4 @@
-# testTaskFprQuicResto
+# testTaskForQuicResto
 Тестовое задание для комании QuicResto.
 Необходимо было реализовать аналог Google таблиц.
 
